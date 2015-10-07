@@ -1,4 +1,7 @@
-NeoPixelPattern   KEYWORD1
-cycle   					KEYWORD2
-loop	   					KEYWORD2
-hsi2rgb     			KEYWORD2
+PixelPattern		KEYWORD1
+cycle				KEYWORD2
+fade				KEYWORD2
+loop				KEYWORD2
+stop				KEYWORD2
+RGB					KEYWORD1
+HSV					KEYWORD1

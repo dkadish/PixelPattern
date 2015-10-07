@@ -1,36 +1,38 @@
 #ifndef PixelPatterns_h
 #define PixelPatterns_h
 
-enum PixelState { STOP, CYCLE, FADE };
+struct RGB {
+	unsigned char r, g, b;
+};
+
+struct HSV {
+	unsigned char h, s, v;
+};
 
 class PixelPattern
 {
   public:
 		
 		PixelPattern();	
-		float I;
-		long _startTime, _duration;
-		PixelState	state;
+		
+		void cycle(long duration); // startTime and duration in millis
 
-		#ifndef NO_FADE
-		float fade_from, fade_to;
-		#endif
+		void fade(HSV from, HSV to, long duration);
 
-    void cycle(long duration); // startTime and duration in millis
-
-		void fade(float fromH, float toH, long duration);
-
-		void loop(char* rgb);
+		RGB loop();
 
 		void stop();
 
 	private:
 
-		void doFade(char* rgb);
+		long _startTime, _duration;
+		
+		HSV _from, _to;
 
-    void hsi2rgb(float H, float I, char* rgb);
+ 		RGB hsv2rgb(HSV hsv);
 
 		float cycleFraction();
+		
 };
 
 #endif
