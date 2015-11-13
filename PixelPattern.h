@@ -22,14 +22,18 @@ class PixelPattern
 		RGB loop();
 
 		void stop();
+		
+		bool running();
+
+ 		RGB hsv2rgb(HSV hsv);
 
 	private:
 
 		long _startTime, _duration;
 		
 		HSV _from, _to;
-
- 		RGB hsv2rgb(HSV hsv);
+		
+		bool _clockwise;
 
 		float cycleFraction();
 		

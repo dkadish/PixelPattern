@@ -5,6 +5,7 @@ PixelPattern::PixelPattern()
 {
 	_from = {0,255,255};
 	_to = {0,255,255};
+	_clockwise = true;
 }
 
 void PixelPattern::cycle(long duration=1000)
@@ -14,6 +15,7 @@ void PixelPattern::cycle(long duration=1000)
 	
 	_from = {0, 255, 255};
 	_to = {255, 255, 255};
+	_clockwise=true;
 
 }
 
@@ -24,6 +26,8 @@ void PixelPattern::fade(HSV from, HSV to, long duration=1000)
 
 	_from = from;
 	_to = to;
+	
+	_clockwise = false; //TODO: Fix this!
 }
 
 void PixelPattern::stop()
@@ -37,12 +41,31 @@ RGB PixelPattern::loop(){
 		RGB rgb = {0, 0, 0};
 		return rgb;
 	} else {
-		HSV hsv = {(int)((_to.h - _from.h)*cycleFraction()+0.5), 255, 255};
-		return hsv2rgb(hsv);
+		unsigned char h;
+		if(_clockwise){
+			h = _from.h - (unsigned char)((_from.h - _to.h)*cycleFraction()+0.5);
+		} else if( _from.h - _to.h > 128 ){
+			h = _from.h - (unsigned char)((_from.h - 255 - _to.h)*cycleFraction()+0.5);
+		} else if( _from.h - _to.h < -128 ){
+			h = _from.h - (unsigned char)((_from.h + 255 - _to.h)*cycleFraction()+0.5);
+		} else {
+			h = _from.h - (unsigned char)((_from.h - _to.h)*cycleFraction()+0.5);
+		}
+		HSV hsv = {h,
+			_from.s - (unsigned char)((_from.s - _to.s)*cycleFraction()+0.5),
+			_from.v - (unsigned char)((_from.v - _to.v)*cycleFraction()+0.5)};
+			return hsv2rgb(hsv);
 	}
 }
 
+/*
+Purple: 170
+Green: 85
+Yellow: 0
+*/
+
 RGB PixelPattern::hsv2rgb(HSV hsv) {
+	// This algorithm produces a translated circle for H. Here, green/yellow is 0, and moves through red, and blue before returning to green/yellow.
 	RGB rgb;
 	unsigned char region, fpart, p, q, t;
 	
@@ -83,4 +106,8 @@ RGB PixelPattern::hsv2rgb(HSV hsv) {
 
 float PixelPattern::cycleFraction() {
 	return ((float)(millis() - _startTime))/((float)_duration);
+}
+
+bool PixelPattern::running(){
+	return cycleFraction() < 1.0;
 }
